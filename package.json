@@ -1,17 +1,21 @@
 {
-  "name": "outliers",
-  "version": "0.0.3",
+  "name": "@christian_fei/outliers",
+  "version": "0.0.1",
   "description": "find outliers in a dataset",
   "keywords": [],
-  "author": "Matthew Mueller <mattmuelle@gmail.com>",
+  "author": "Christian Fei <crifei93@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/MatthewMueller/outliers.git"
+    "url": "git://github.com/christian-fei/outliers.git"
   },
-  "dependencies": {},
+  "scripts": {
+    "test": "m.test"
+  },
+  "dependencies": {
+    "debug": "^3.1.0"
+  },
   "devDependencies": {
-    "mocha": "*",
-    "should": "*"
+    "m.test": "0.0.57"
   },
   "main": "index"
 }

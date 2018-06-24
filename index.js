@@ -1,92 +1,69 @@
-/**
- * Module Dependencies
- */
+var isArray = Array.isArray
+const log = require('debug')('outliers')
 
-var isArray = Array.isArray;
+module.exports = outliers
 
-/**
- * Export `outliers`
- */
+function outliers (arr, key) {
+  // log('.outliers', arr)
+  if (isArray(arr)) return calc(arr, key)
 
-module.exports = outliers;
+  var o = null
+  var k = typeof arr === 'string' && arr
 
-/**
- * Initialize the outliers
- *
- * @param {Array|String|undefined}
- * @return {Array|Function}
- */
-
-function outliers(arr) {
-  if (isArray(arr)) return calc(arr);
-
-  var o = null;
-  var k = 'string' == typeof arr && arr;
-
-  return function(v, i, a) {
-    if (!o) o = calc(a, k);
-    v = k ? v[k] : v;
-    return !~o.indexOf(v);
+  return function (v, i, a) {
+    if (!o) o = calc(a, k)
+    v = k ? v[k] : v
+    return !~o.indexOf(v)
   }
 }
 
-/**
- * Calculate the outliers
- *
- * @param {Array} arr
- * @param {String} key (optional)
- * @return {Array} outliers
- */
+function calc (arr, key) {
+  arr = arr.slice(0)
 
-function calc(arr, key) {
-  arr = arr.slice(0);
+  if (key) arr = arr.map(function (v) { return v[key] })
 
-  if (key) arr = arr.map(function(v) { return v[key]; });
+  arr = arr.sort(function (a, b) {
+    return a - b
+  })
 
-  arr = arr.sort(function(a, b) {
-    return a - b;
-  });
-
-  var len = arr.length;
-  var middle = median(arr);
-  var range = iqr(arr);
-  var outliers = [];
+  var len = arr.length
+  var middle = median(arr)
+  log('middle', middle)
+  var range = iqr(arr) / 1.75
+  log('range', range)
+  var outliers = []
 
   for (var i = 0; i < len; i++) {
-    Math.abs(arr[i] - middle) > range && outliers.push(arr[i]);
+    log('-- for: process', i, arr[i])
+    if (Math.abs(arr[i] - middle) > range) {
+      log('-- for: pushing outlier', arr[i])
+      outliers.push(arr[i])
+    } else {
+      log('-- for: skipping outlier', arr[i])
+    }
   }
 
-  return outliers;
+  log('-- outliers', outliers)
+
+  return outliers
 }
 
-/**
- * Find the median
- *
- * @param {Array} arr
- * @return {Number}
- */
-
-function median(arr) {
-  var len = arr.length;
-  var half = ~~(len / 2);
+function median (arr) {
+  // log('.median', arr)
+  var len = arr.length
+  var half = ~~(len / 2)
 
   return len % 2
     ? arr[half]
-    : (arr[half - 1] + arr[half]) / 2;
+    : (arr[half - 1] + arr[half]) / 2
 }
 
-/**
- * Find the range
- *
- * @param {Array} arr
- * @return {Number}
- */
+function iqr (arr) {
+  // log('.iqr', arr)
+  var len = arr.length
+  var q1 = median(arr.slice(0, ~~(len / 2)))
+  var q3 = median(arr.slice(Math.ceil(len / 2)))
+  var g = 1.5
 
-function iqr(arr) {
-  var len = arr.length;
-  var q1 = median(arr.slice(0, ~~(len / 2)));
-  var q3 = median(arr.slice(Math.ceil(len / 2)));
-  var g = 1.5;
-
-  return (q3 - q1) * g;
+  return (q3 - q1) * g
 }
