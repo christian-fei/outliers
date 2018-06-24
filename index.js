@@ -4,7 +4,7 @@ const log = require('debug')('outliers')
 module.exports = outliers
 
 function outliers (arr, divider) {
-  // log('.outliers', arr)
+  log('.outliers', arr)
   if (isArray(arr)) return calc(arr, divider)
 
   var o = null
@@ -47,7 +47,7 @@ function calc (arr, divider = 1.9) {
 }
 
 function median (arr) {
-  // log('.median', arr)
+  log('.median', arr)
   var len = arr.length
   var half = ~~(len / 2)
 
@@ -57,7 +57,7 @@ function median (arr) {
 }
 
 function iqr (arr) {
-  // log('.iqr', arr)
+  log('.iqr', arr)
   var len = arr.length
   var q1 = median(arr.slice(0, ~~(len / 2)))
   var q3 = median(arr.slice(Math.ceil(len / 2)))
