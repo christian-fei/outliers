@@ -28,7 +28,7 @@ function calc (arr, divider = 1.9) {
   var middle = median(arr)
   log('middle', middle)
   var range = iqr(arr) / divider
-  log('range', range)
+  log('range, divider', range, divider)
   var outliers = []
 
   for (var i = 0; i < len; i++) {
