@@ -4,12 +4,14 @@ const assert = require('assert')
 const outliers = require('..')
 const litecoinJune = require('../litecoin-june.json')
 
-test('xxx', () => {
-  const data = [12, 14, 51, 12, 10, 9, 16, 1]
-  const r = outliers(data)
-  console.log('r', r)
+test('outliers in litecoin june', () => {
   const lows = litecoinJune.map(l => +l.low)
   const rreal = outliers(lows)
-  console.log('rreal', rreal)
-  // console.log('litecoinJune', litecoinJune)
+  assert.deepEqual(rreal, [118.95, 119.62, 122.37])
+})
+test('outliers in litecoin june with custom divider', () => {
+  const divider = 2
+  const lows = litecoinJune.map(l => +l.low)
+  const rreal = outliers(lows, divider)
+  assert.deepEqual(rreal, [118.56, 118.7, 118.73, 118.95, 119.62, 122.37])
 })

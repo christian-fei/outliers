@@ -3,24 +3,22 @@ const log = require('debug')('outliers')
 
 module.exports = outliers
 
-function outliers (arr, key) {
+function outliers (arr, divider) {
   // log('.outliers', arr)
-  if (isArray(arr)) return calc(arr, key)
+  if (isArray(arr)) return calc(arr, divider)
 
   var o = null
   var k = typeof arr === 'string' && arr
 
   return function (v, i, a) {
-    if (!o) o = calc(a, k)
+    if (!o) o = calc(a, divider)
     v = k ? v[k] : v
     return !~o.indexOf(v)
   }
 }
 
-function calc (arr, key) {
+function calc (arr, divider = 1.9) {
   arr = arr.slice(0)
-
-  if (key) arr = arr.map(function (v) { return v[key] })
 
   arr = arr.sort(function (a, b) {
     return a - b
@@ -29,7 +27,7 @@ function calc (arr, key) {
   var len = arr.length
   var middle = median(arr)
   log('middle', middle)
-  var range = iqr(arr) / 1.75
+  var range = iqr(arr) / divider
   log('range', range)
   var outliers = []
 
