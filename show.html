@@ -44,7 +44,7 @@
       function handleFileRead(e) {
         let json = JSON.parse(e.target.result)
         json = json.sort((a, b) => new Date(a.time) - new Date(b.time))
-        drawOnChart(json)
+        // drawOnChart(json)
         drawMedianDifferencing(json)
         drawOnAnnotationChart(json)
       }
