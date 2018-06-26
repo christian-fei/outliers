@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Show dataset</title>
+  </head>
+  <body>
+    <div>
+      <label for="file">File (.json)</label>
+      <input name="file" id="file" type="file">
+    </div>
+
+    <div id="chart"></div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      window.draw = null
+      google.charts.load('current', {packages: ['corechart', 'line']})
+      google.charts.setOnLoadCallback(draw => {
+        window.draw = draw
+      })
+
+      document.getElementById('file').addEventListener('change', handleFileSelect, false);
+
+      function handleFileSelect(evt) {
+        var files = evt.target.files
+        if (files.length < 1) throw new Error('please provide file')
+        const file = files[0]
+        var reader = new FileReader()
+
+        reader.onload = handleFileRead
+
+        reader.readAsText(file)
+      }
+
+      function handleFileRead(e) {
+        const json = JSON.parse(e.target.result)
+
+        const data = [['time', 'high']].concat(json.map(i => [i.time, i.high]))
+
+        const options = {
+          title: 'data',
+          interpolateNulls: true,
+          hAxis: {
+            title: 'Time'
+          },
+          vAxis: {
+            title: 'high'
+          },
+          height: 300,
+          width: 1200,
+          legend: {position: 'none'}
+        }
+        drawOnChart({data, options})
+      }
+
+
+      function drawOnChart ({data, options}) {
+        let data1 = google.visualization.arrayToDataTable(data, false)
+        var chart = new google.visualization.LineChart(document.getElementById('chart'))
+        chart.draw(data1, options)
+      }
+    </script>
+  </body>
+</html>
