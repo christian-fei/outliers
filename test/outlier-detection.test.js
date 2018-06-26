@@ -2,7 +2,7 @@
 
 const assert = require('assert')
 const outliers = require('..')
-const litecoinJune = require('../litecoin-june.json')
+const litecoinJune = require('../samples/litecoin-june.json')
 
 test('outliers in litecoin june', () => {
   const lows = litecoinJune.map(l => +l.low)

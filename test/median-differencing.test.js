@@ -2,7 +2,7 @@
 
 const assert = require('assert')
 const medianDifferencing = require('../median-differencing')
-const litecoinJune = require('../litecoin-june.json')
+const litecoinJune = require('../samples/litecoin-june.json')
 
 test('medianDifferencing in litecoin june', () => {
   const lows = litecoinJune.map(l => +l.low).sort((a, b) => new Date(a.time) - new Date(b.time))
