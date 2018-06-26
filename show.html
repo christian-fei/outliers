@@ -5,19 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Show dataset</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
   </head>
   <body>
-    <div>
-      <label for="file">File (.json)</label>
-      <input name="file" id="file" type="file">
+    <div class="container">
+      <div class="section">
+        <label for="file">File (.json)</label>
+        <input name="file" id="file" type="file">
+      </div>
     </div>
 
     <div id="chart"></div>
+    <div id="annotationchart"></div>
+    <pre id="mediandifferencing"></pre>
+    <pre id="mediandifferencingindexes"></pre>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       window.draw = null
-      google.charts.load('current', {packages: ['corechart', 'line']})
+      google.charts.load('current', {packages: ['corechart', 'line', 'annotationchart']})
       google.charts.setOnLoadCallback(draw => {
         window.draw = draw
       })
@@ -38,7 +44,13 @@
       function handleFileRead(e) {
         let json = JSON.parse(e.target.result)
         json = json.sort((a, b) => new Date(a.time) - new Date(b.time))
+        drawOnChart(json)
+        drawMedianDifferencing(json)
+        drawOnAnnotationChart(json)
+      }
 
+
+      function drawOnChart (json) {
         const options = {
           title: 'data',
           interpolateNulls: true,
@@ -53,12 +65,7 @@
           width: 1200,
           legend: {position: 'none'}
         }
-        drawOnChart(json, options)
-        drawMedianDifferencing(json)
-      }
 
-
-      function drawOnChart (json, options) {
         const data = [['time', 'high']].concat(json.map(i => [i.time, i.high]))
 
         let data1 = google.visualization.arrayToDataTable(data, false)
@@ -66,12 +73,32 @@
         chart.draw(data1, options)
       }
 
+      function drawOnAnnotationChart (json) {
+        const highs = json.map(l => +l.high)
+        const rreal = medianDifferencing(highs)
+        const rrealIndexes = medianDifferencing(highs, {indexes: true})
+
+        var data = new google.visualization.DataTable()
+        data.addColumn('date', 'Time')
+        data.addColumn('number', 'high')
+        data.addColumn('string', 'annotation')
+        data.addRows(json.map((i, index) => [new Date(i.time), +i.high, rrealIndexes.indexOf(index) >= 0 ? '' + i.high : '']))
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('annotationchart'))
+
+        var options = {
+          displayAnnotations: true
+        }
+
+        chart.draw(data, options)
+      }
+
       function drawMedianDifferencing (data) {
         const highs = data.map(l => +l.high)
         const rreal = medianDifferencing(highs)
         const rrealIndexes = medianDifferencing(highs, {indexes: true})
-        console.log('rreal', rreal)
-        console.log('rrealIndexes', rrealIndexes)
+        document.getElementById('mediandifferencing').innerText = `rreal: ${JSON.stringify(rreal, null, 2)}`
+        document.getElementById('mediandifferencingindexes').innerText = `rrealIndexes: ${JSON.stringify(rrealIndexes, null, 2)}`
       }
 
 
