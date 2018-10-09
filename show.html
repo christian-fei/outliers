@@ -45,6 +45,10 @@
         let json = JSON.parse(e.target.result)
         json = json.sort((a, b) => new Date(a.time) - new Date(b.time))
         // drawOnChart(json)
+
+        if (Array.isArray(json[0])) {
+          json = json.map(j => ({time: j[0], low: j[1], high: j[2], open: j[3], close: j[4], volume: j[5]}))
+        }
         drawMedianDifferencing(json)
         drawOnAnnotationChart(json)
       }
